@@ -1,10 +1,12 @@
+
 "use client";
 
 import React from 'react';
-import { Search, Plus, Bell, ChevronDown } from 'lucide-react';
+import { Search, Plus, Bell, ChevronDown, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 interface TopBarProps {
   breadcrumb: string;
@@ -17,12 +19,12 @@ export function TopBar({ breadcrumb, onSearchClick, onNewProject, onToggleNotifi
   return (
     <header className="h-14 w-full bg-[#0D0D14] border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-[50]">
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 mr-2">
-          <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <Link href="/" className="flex items-center gap-2 mr-2 group">
+          <svg className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
-          <span className="font-bold text-lg tracking-tight text-white">Aegis</span>
-        </div>
+          <span className="font-bold text-lg tracking-tight text-white uppercase italic">Argus</span>
+        </Link>
         <Separator orientation="vertical" className="h-4 bg-white/10" />
         <div className="text-sm font-medium text-muted-foreground">
           Workspace <span className="mx-1 text-white/20">/</span> <span className="text-foreground">{breadcrumb}</span>
@@ -45,14 +47,15 @@ export function TopBar({ breadcrumb, onSearchClick, onNewProject, onToggleNotifi
       </div>
 
       <div className="flex items-center gap-4">
-        <Button 
-          onClick={onNewProject}
-          size="sm" 
-          className="rounded-full h-8 px-4 gap-2 text-xs font-semibold"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          New Project
-        </Button>
+        <Link href="/architect">
+          <Button 
+            size="sm" 
+            className="rounded-full h-8 px-4 gap-2 text-xs font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            Architect desk
+          </Button>
+        </Link>
         
         <button 
           onClick={onToggleNotifications}

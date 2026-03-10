@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -13,11 +14,13 @@ import {
   Bell, 
   Settings, 
   ChevronDown,
-  BookOpen
+  BookOpen,
+  Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
 
 export type ViewType = 'dashboard' | 'projects' | 'blueprints' | 'safety' | 'compiler' | 'integrations' | 'analytics' | 'settings';
 
@@ -59,7 +62,7 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
     <aside className="w-[240px] bg-[#0D0D14] border-r border-white/5 flex flex-col h-screen sticky top-0">
       {/* Workspace Switcher */}
       <div className="p-4">
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-white/5 transition-colors group">
+        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-white/5 transition-colors group text-left">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
               AC
@@ -71,9 +74,19 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-6">
+        {/* Architect Desk Quick Access */}
+        <div className="px-2 mb-4">
+          <Link href="/architect">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+              <Zap className="w-4 h-4 fill-current" />
+              <span>Architect's Desk</span>
+            </button>
+          </Link>
+        </div>
+
         {navGroups.map((group) => (
           <div key={group.label} className="space-y-1">
-            <h3 className="px-3 text-[10px] font-bold text-muted-foreground tracking-wider mb-2">
+            <h3 className="px-3 text-[10px] font-bold text-muted-foreground tracking-wider mb-2 uppercase">
               {group.label}
             </h3>
             {group.items.map((item) => (
