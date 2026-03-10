@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "user-avatar",
+      "description": "User avatar placeholder",
+      "imageUrl": "https://picsum.photos/seed/aegis-user/100/100",
+      "imageHint": "user avatar"
+    },
+    {
+      "id": "blueprint-thumb",
+      "description": "Blueprint pattern visual",
+      "imageUrl": "https://picsum.photos/seed/aegis-blueprint/400/300",
+      "imageHint": "technical diagram"
+    }
+  ]
 }
