@@ -1,20 +1,16 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
   ChevronDown, 
   ShieldCheck, 
-  Plus, 
-  Bell, 
   MoreHorizontal, 
-  Cpu, 
   Shapes, 
   Play, 
   Maximize2, 
-  Trash2, 
   ZoomIn, 
   ZoomOut, 
   Maximize, 
@@ -23,7 +19,6 @@ import {
   ShieldAlert, 
   FileText, 
   Share2, 
-  Keyboard,
   Paperclip,
   Mic,
   Send,
@@ -32,10 +27,9 @@ import {
   Database,
   History,
   Zap,
-  Info,
-  Lightbulb,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -143,15 +137,15 @@ const SCENARIOS: Record<string, Scenario> = {
         options: ["OpenAI GPT-4o", "Llama 3 (Ollama)", "Claude 3.5 Haiku"],
         nodesToAdd: [
           { id: 'retriever', type: 'tool', name: 'RAG Retriever', x: 500, y: 280, status: 'healthy' },
-          { id: 'llm', type: 'agent', name: 'Llama 3 (Ollama)', subtitle: 'On-Premise', x: 650, y: 280, status: 'healthy' }
+          { id: 'llm_node', type: 'agent', name: 'Llama 3 (Ollama)', subtitle: 'On-Premise', x: 650, y: 280, status: 'healthy' }
         ],
-        connectionsToAdd: [{ from: 'pinecone', to: 'retriever', animated: true }, { from: 'retriever', to: 'llm', animated: true }]
+        connectionsToAdd: [{ from: 'pinecone', to: 'retriever', animated: true }, { from: 'retriever', to: 'llm_node', animated: true }]
       },
       {
         id: 5,
         chatMessage: "Next, let's choose the agent orchestration framework. Which platform would you like to use?",
         options: ["LangGraph", "CrewAI", "Google ADK", "AutoGen", "Argus Native"],
-        nodesToUpdate: [{ id: 'llm', name: 'Llama 3 (LangGraph)', status: 'healthy' }]
+        nodesToUpdate: [{ id: 'llm_node', name: 'Llama 3 (LangGraph)', status: 'healthy' }]
       },
       {
         id: 6,
@@ -165,7 +159,7 @@ const SCENARIOS: Record<string, Scenario> = {
         chatMessage: "One more question: should all employees have access to all documents, or role-based filtering?",
         options: ["Open Access", "Role-Based Access"],
         nodesToAdd: [{ id: 'rbac', type: 'safety', name: 'RBAC Middleware', x: 800, y: 280, status: 'healthy' }],
-        connectionsToAdd: [{ from: 'llm', to: 'rbac', animated: true }]
+        connectionsToAdd: [{ from: 'llm_node', to: 'rbac', animated: true }]
       },
       {
         id: 8,
@@ -324,9 +318,10 @@ export default function ArchitectPage() {
   const [safetyIssues, setSafetyIssues] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('code');
   const [nodeDetailId, setNodeDetailId] = useState<string | null>(null);
+  
+  const autoPlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const scenario = SCENARIOS[activeScenarioId];
-  const currentStep = scenario.steps[currentStepIndex];
 
   // Typing animation effect
   const typewriter = (text: string, callback: () => void) => {
@@ -345,7 +340,8 @@ export default function ArchitectPage() {
       } else {
         setMessages(prev => {
           const last = prev[prev.length - 1];
-          return [...prev.slice(0, -1), { ...last, typing: false }];
+          if (last) return [...prev.slice(0, -1), { ...last, typing: false }];
+          return prev;
         });
         setIsTyping(false);
         clearInterval(interval);
@@ -355,6 +351,8 @@ export default function ArchitectPage() {
   };
 
   const resetWorkspace = (scenarioId: string) => {
+    if (autoPlayTimeoutRef.current) clearTimeout(autoPlayTimeoutRef.current);
+    
     setActiveScenarioId(scenarioId);
     setCurrentStepIndex(0);
     setMessages([]);
@@ -367,32 +365,41 @@ export default function ArchitectPage() {
   };
 
   const advanceStep = () => {
-    if (currentStepIndex >= scenario.steps.length - 1) return;
+    if (currentStepIndex >= scenario.steps.length) return;
 
-    const nextStep = scenario.steps[currentStepIndex];
+    const currentStep = scenario.steps[currentStepIndex];
     
     // Add User message if exists
-    if (nextStep.userMessage) {
-      setMessages(prev => [...prev, { id: Math.random().toString(), role: 'user', text: nextStep.userMessage! }]);
+    if (currentStep.userMessage) {
+      setMessages(prev => [...prev, { id: Math.random().toString(), role: 'user', text: currentStep.userMessage! }]);
     }
 
     // Process step updates
-    if (nextStep.nodesToAdd) setNodes(prev => [...prev, ...nextStep.nodesToAdd!]);
-    if (nextStep.nodesToUpdate) {
+    if (currentStep.nodesToAdd) {
+      setNodes(prev => {
+        // Avoid duplicate IDs
+        const idsToAdd = new Set(currentStep.nodesToAdd!.map(n => n.id));
+        const filteredPrev = prev.filter(n => !idsToAdd.has(n.id));
+        return [...filteredPrev, ...currentStep.nodesToAdd!];
+      });
+    }
+    if (currentStep.nodesToUpdate) {
       setNodes(prev => prev.map(n => {
-        const update = nextStep.nodesToUpdate?.find(u => u.id === n.id);
+        const update = currentStep.nodesToUpdate?.find(u => u.id === n.id);
         return update ? { ...n, ...update } : n;
       }));
     }
-    if (nextStep.connectionsToAdd) setConnections(prev => [...prev, ...nextStep.connectionsToAdd!]);
-    if (nextStep.safetyScore) setSafetyScore(nextStep.safetyScore);
-    if (nextStep.code) setCode(nextStep.code);
-    if (nextStep.safetyIssues) setSafetyIssues(nextStep.safetyIssues);
+    if (currentStep.connectionsToAdd) {
+      setConnections(prev => [...prev, ...currentStep.connectionsToAdd!]);
+    }
+    if (currentStep.safetyScore !== undefined) setSafetyScore(currentStep.safetyScore);
+    if (currentStep.code) setCode(currentStep.code);
+    if (currentStep.safetyIssues) setSafetyIssues(currentStep.safetyIssues);
 
     // Typewriter AI message
-    typewriter(nextStep.chatMessage, () => {
-      if (autoPlay && nextStep.userMessage) {
-        setTimeout(advanceStep, 1500);
+    typewriter(currentStep.chatMessage, () => {
+      if (autoPlay && currentStep.userMessage && currentStepIndex < scenario.steps.length - 1) {
+        autoPlayTimeoutRef.current = setTimeout(advanceStep, 1500);
       }
     });
 
@@ -400,9 +407,15 @@ export default function ArchitectPage() {
   };
 
   useEffect(() => {
-    resetWorkspace('B');
-    // Start first step
-    setTimeout(() => advanceStep(), 500);
+    // On mount or scenario change, reset and start
+    resetWorkspace(activeScenarioId);
+    autoPlayTimeoutRef.current = setTimeout(() => {
+      advanceStep();
+    }, 500);
+
+    return () => {
+      if (autoPlayTimeoutRef.current) clearTimeout(autoPlayTimeoutRef.current);
+    };
   }, [activeScenarioId]);
 
   return (
@@ -476,7 +489,7 @@ export default function ArchitectPage() {
           {Object.values(SCENARIOS).map(s => (
             <button
               key={s.id}
-              onClick={() => resetWorkspace(s.id)}
+              onClick={() => setActiveScenarioId(s.id)}
               className={cn(
                 "px-3 py-1 rounded-full text-[11px] font-bold border transition-all",
                 activeScenarioId === s.id ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" : "bg-transparent border-white/10 text-muted-foreground hover:text-foreground"
@@ -502,7 +515,7 @@ export default function ArchitectPage() {
               )} />
             </div>
           </div>
-          {!autoPlay && !isTyping && currentStepIndex < scenario.steps.length - 1 && (
+          {!autoPlay && !isTyping && currentStepIndex < scenario.steps.length && (
             <Button 
               onClick={advanceStep}
               size="sm" 
@@ -570,9 +583,9 @@ export default function ArchitectPage() {
             ))}
             
             {/* AI Options */}
-            {currentStep.options && !isTyping && (
+            {currentStepIndex < scenario.steps.length && scenario.steps[currentStepIndex]?.options && !isTyping && (
               <div className="grid grid-cols-1 gap-2 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {currentStep.options.map(opt => (
+                {scenario.steps[currentStepIndex].options?.map(opt => (
                   <Button 
                     key={opt}
                     variant="outline"
@@ -650,7 +663,7 @@ export default function ArchitectPage() {
 
                 return (
                   <path 
-                    key={i}
+                    key={`${conn.from}-${conn.to}-${i}`}
                     d={`M ${startX} ${startY} C ${startX + 50} ${startY}, ${endX - 50} ${endY}, ${endX} ${endY}`}
                     stroke="#6366F1"
                     strokeWidth="1.5"
@@ -940,7 +953,7 @@ export default function ArchitectPage() {
 function Copy({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
     </svg>
   );
 }
