@@ -128,6 +128,7 @@ interface Scenario {
   framework: string;
   blueprint: string;
   steps: Step[];
+  isManual?: boolean;
 }
 
 const SCENARIOS: Record<string, Scenario> = {
@@ -338,6 +339,7 @@ const SCENARIOS: Record<string, Scenario> = {
     title: 'Financial Data Pipeline',
     framework: 'LangGraph',
     blueprint: 'Supervisor Pattern',
+    isManual: true,
     steps: [
       {
         id: 1,
@@ -481,6 +483,7 @@ export default function ArchitectPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [nodes, setNodes] = useNodesState<RFNode>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
+  const [chatInputValue, setChatInput] = useState('');
 
   const onNodesChangeHandler = React.useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), [setNodes]);
   const onEdgesChangeHandler = React.useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), [setEdges]);
@@ -654,11 +657,38 @@ export default function ArchitectPage() {
     advanceToStep(nextIdx);
   };
 
+  const handleSendMessage = () => {
+    if (!chatInputValue.trim() || isTyping) return;
+    
+    const text = chatInputValue.trim();
+    setMessages(prev => [...prev, { id: Math.random().toString(), role: 'user', text }]);
+    setChatInput('');
+
+    // Trigger Scenario D if message matches
+    if (text === "Create a multi-agent system that analyzes financial reports and updates our internal SQL database.") {
+      setActiveScenarioId('D');
+      // Jump to step 1 (skip initial state)
+      setCurrentStepIndex(-1);
+      setTimeout(() => advanceToStep(1), 500);
+    } else {
+      // Generic response for other inputs
+      setTimeout(() => {
+        typewriter("I'm specialized in architectural patterns. Try asking me to build a financial data pipeline or research agent.", () => {});
+      }, 500);
+    }
+  };
+
   useEffect(() => {
-    // On mount or scenario change, reset and start first step
+    // On mount or scenario change, reset and start first step (if not manual)
+    const currentScenario = SCENARIOS[activeScenarioId];
     resetWorkspace(activeScenarioId);
-    const t = setTimeout(() => advanceToStep(0), 500);
-    return () => clearTimeout(t);
+    if (!currentScenario.isManual) {
+      const t = setTimeout(() => advanceToStep(0), 500);
+      return () => clearTimeout(t);
+    } else {
+      // For manual scenarios, show a welcome message
+      typewriter("Welcome. How can I help you architect your next agent today?", () => {});
+    }
   }, [activeScenarioId]);
 
   return (
@@ -672,7 +702,7 @@ export default function ArchitectPage() {
           <div className="flex items-center gap-2 text-sm font-medium">
             <span className="text-muted-foreground">Projects</span>
             <span className="text-white/20">/</span>
-            <span className="text-white">Financial Data Pipeline</span>
+            <span className="text-white">{scenario.title}</span>
           </div>
           <Badge variant="outline" className="h-5 text-[10px] font-bold border-white/10 bg-white/5 text-muted-foreground">
             ● DRAFT
@@ -804,7 +834,7 @@ export default function ArchitectPage() {
             ))}
 
             {/* AI Options — clicking posts user message and advances */}
-            {currentStepIndex < scenario.steps.length && scenario.steps[currentStepIndex]?.options && !isTyping && (
+            {currentStepIndex >= 0 && currentStepIndex < scenario.steps.length && scenario.steps[currentStepIndex]?.options && !isTyping && (
               <div className="grid grid-cols-1 gap-2 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {scenario.steps[currentStepIndex].options?.map(opt => (
                   <Button
@@ -842,10 +872,22 @@ export default function ArchitectPage() {
           <div className="p-4 border-t border-white/10 space-y-3 bg-[#0D0D14]">
             <div className="relative">
               <textarea
+                value={chatInputValue}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
                 placeholder="Ask Argus Architect anything..."
                 className="w-full bg-[#0A0A0F] border border-white/10 rounded-xl p-3 pr-10 text-xs text-white placeholder:text-white/20 outline-none focus:border-[#6366F1]/50 resize-none min-h-[60px]"
               />
-              <Button size="icon" className="absolute right-2 bottom-2 h-7 w-7 bg-[#6366F1] rounded-lg text-white">
+              <Button 
+                size="icon" 
+                onClick={handleSendMessage}
+                className="absolute right-2 bottom-2 h-7 w-7 bg-[#6366F1] rounded-lg text-white"
+              >
                 <Send className="w-3.5 h-3.5" />
               </Button>
             </div>
