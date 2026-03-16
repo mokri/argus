@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
 
   const getBreadcrumb = () => {
-    switch(activeView) {
+    switch (activeView) {
       case 'dashboard': return 'My Dashboard';
       case 'projects': return 'My Projects';
       case 'blueprints': return 'Blueprint Library';
@@ -37,7 +37,7 @@ export default function DashboardPage() {
   };
 
   const renderView = () => {
-    switch(activeView) {
+    switch (activeView) {
       case 'dashboard': return <DashboardView />;
       case 'projects': return <ProjectsView />;
       case 'blueprints': return <BlueprintsView />;
@@ -51,17 +51,17 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#0A0A0F] text-foreground font-body overflow-hidden">
+    <div className="flex h-screen bg-[#F7F7F4] text-foreground font-sans overflow-hidden">
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
-      
+
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar 
-          breadcrumb={getBreadcrumb()} 
+        <TopBar
+          breadcrumb={getBreadcrumb()}
           onSearchClick={() => setIsCommandPaletteOpen(true)}
           onNewProject={() => setIsNewProjectModalOpen(true)}
           onToggleNotifications={() => setIsNotificationsOpen(true)}
         />
-        
+
         <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           <div className="max-w-[1400px] mx-auto">
             {renderView()}
@@ -69,19 +69,19 @@ export default function DashboardPage() {
         </main>
       </div>
 
-      <CommandPalette 
-        isOpen={isCommandPaletteOpen} 
-        onClose={() => setIsCommandPaletteOpen(false)} 
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
       />
-      
-      <NotificationsPanel 
-        isOpen={isNotificationsOpen} 
-        onClose={() => setIsNotificationsOpen(false)} 
+
+      <NotificationsPanel
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
       />
-      
-      <NewProjectModal 
-        isOpen={isNewProjectModalOpen} 
-        onClose={() => setIsNewProjectModalOpen(false)} 
+
+      <NewProjectModal
+        isOpen={isNewProjectModalOpen}
+        onClose={() => setIsNewProjectModalOpen(false)}
       />
     </div>
   );

@@ -2,17 +2,17 @@
 "use client";
 
 import React from 'react';
-import { 
-  Home, 
-  Folder, 
-  Shapes, 
-  ShieldCheck, 
-  Cpu, 
-  Plug, 
-  BarChart3, 
-  Users, 
-  Bell, 
-  Settings, 
+import {
+  Home,
+  Folder,
+  Shapes,
+  ShieldCheck,
+  Cpu,
+  Plug,
+  BarChart3,
+  Users,
+  Bell,
+  Settings,
   ChevronDown,
   BookOpen,
   Zap
@@ -59,12 +59,12 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-[240px] bg-[#0D0D14] border-r border-white/5 flex flex-col h-screen sticky top-0">
+    <aside className="w-[240px] bg-white border-r border-[#242422]/8 flex flex-col h-screen sticky top-0">
       {/* Workspace Switcher */}
       <div className="p-4">
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-white/5 transition-colors group text-left">
+        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-[#242422]/5 transition-colors group text-left">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+            <div className="w-6 h-6 rounded bg-[#FF7612]/15 flex items-center justify-center text-[#FF7612] font-bold text-xs">
               AC
             </div>
             <span className="text-sm font-medium text-foreground">Acme Corp</span>
@@ -77,7 +77,7 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
         {/* Architect Desk Quick Access */}
         <div className="px-2 mb-4">
           <Link href="/architect">
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-[#FF7612] text-white font-bold shadow-none hover:bg-[#FF9E57] transition-all">
               <Zap className="w-4 h-4 fill-current" />
               <span>Architect's Desk</span>
             </button>
@@ -95,16 +95,16 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
                 onClick={() => !item.disabled && setActiveView(item.id as ViewType)}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-all duration-150 group",
-                  activeView === item.id 
-                    ? "bg-primary/10 text-white border-l-[3px] border-primary" 
-                    : "text-muted-foreground hover:bg-primary/5 hover:text-foreground",
+                  activeView === item.id
+                    ? "bg-[#FF7612]/8 text-[#242422] border-l-[3px] border-[#FF7612]"
+                    : "text-[#242422]/50 hover:bg-[#242422]/3 hover:text-[#242422]",
                   item.disabled && "opacity-50 cursor-not-allowed"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <item.icon className={cn(
                     "w-4 h-4",
-                    activeView === item.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                    activeView === item.id ? "text-[#FF7612]" : "text-[#242422]/40 group-hover:text-[#242422]"
                   )} />
                   <span>{item.label}</span>
                 </div>
@@ -119,8 +119,8 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-white/5 space-y-4">
-        <div className="p-3 bg-white/5 rounded-lg space-y-3">
+      <div className="p-4 border-t border-[#242422]/8 space-y-4">
+        <div className="p-3 bg-[#F7F7F4] rounded-lg space-y-3 border border-[#242422]/5">
           <div className="flex items-center justify-between text-[11px]">
             <span className="text-muted-foreground">API Scans this month</span>
             <span className="text-foreground font-medium">67%</span>
@@ -128,7 +128,7 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
           <Progress value={67} className="h-1.5" />
           <div className="flex items-center justify-between text-[10px]">
             <span className="text-muted-foreground">670 / 1,000 scans</span>
-            <button className="text-primary hover:underline">Upgrade Plan →</button>
+            <button className="text-[#FF7612] hover:underline">Upgrade Plan →</button>
           </div>
         </div>
 

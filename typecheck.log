@@ -1,0 +1,28 @@
+
+> nextn@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/architect/page.tsx(166,43): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(221,45): error TS2353: Object literal may only specify known properties, and 'subtitle' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(251,45): error TS2353: Object literal may only specify known properties, and 'subtitle' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(302,44): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(309,30): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(310,29): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(311,31): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '{ id: string; }'.
+src/app/architect/page.tsx(837,28): error TS2322: Type '"ghost"' is not assignable to type '"secondary" | "destructive" | "default" | "outline" | null | undefined'.
+src/app/architect/page.tsx(938,34): error TS2322: Type '"ghost"' is not assignable to type '"secondary" | "destructive" | "default" | "outline" | null | undefined'.
+src/app/layout.tsx(18,65): error TS2322: Type '{ rel: string; href: string; crossorigin: true; }' is not assignable to type 'DetailedHTMLProps<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>'.
+  Property 'crossorigin' does not exist on type 'DetailedHTMLProps<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>'. Did you mean 'crossOrigin'?
+src/components/dashboard/CommandPalette.tsx(97,29): error TS2339: Property 'shortcut' does not exist on type '{ label: string; type: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; } | { ...; }'.
+  Property 'shortcut' does not exist on type '{ label: string; type: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; }'.
+src/components/dashboard/CommandPalette.tsx(97,73): error TS2339: Property 'shortcut' does not exist on type '{ label: string; type: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; } | { ...; }'.
+  Property 'shortcut' does not exist on type '{ label: string; type: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; }'.
+src/components/dashboard/NewProjectModal.tsx(107,24): error TS2304: Cannot find name 'Badge'.
+src/components/dashboard/NewProjectModal.tsx(107,139): error TS2304: Cannot find name 'Badge'.
+src/components/dashboard/Sidebar.tsx(95,38): error TS2339: Property 'disabled' does not exist on type '{ id: string; label: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; badge?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'disabled' does not exist on type '{ id: string; label: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; badge?: undefined; }'.
+src/components/dashboard/Sidebar.tsx(101,24): error TS2339: Property 'disabled' does not exist on type '{ id: string; label: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; badge?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'disabled' does not exist on type '{ id: string; label: string; icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>; badge?: undefined; }'.
+src/components/ui/calendar.tsx(57,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+src/components/ui/calendar.tsx(57,22): error TS7031: Binding element 'className' implicitly has an 'any' type.
+src/components/ui/calendar.tsx(60,23): error TS7031: Binding element 'className' implicitly has an 'any' type.
